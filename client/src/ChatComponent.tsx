@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 
 export const ChatComponent = (props: any) => {
 
-    const URL = 'ws://127.0.0.1:8080';
+    const URL = 'ws://127.0.0.1:8000';
     const [ws, setWs] = useState(new WebSocket(URL));
     const [message, setMessage] = useState("")
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([""]);
 
     const sendMessage=()=>{
 
@@ -26,20 +26,21 @@ export const ChatComponent = (props: any) => {
             console.log('connected')
         }
 
-        ws.onmessage = (evt: { data: string; }) => {
-            // listen to data sent from the websocket server
-            console.log('hello maded it here');
-            const message = JSON.parse(evt.data);
-            setMessages([...messages]);
-            console.log(messages)
-        }
-
         ws.onclose = () => {
             console.log('disconnected')
             // automatically try to reconnect on connection loss
             setWs(new WebSocket(URL));
         }
-    }, [message, messages]);
+    }, [ws, setWs]);
+
+    useEffect(() => {
+        ws.onmessage = (evt) => {
+            // listen to data sent from the websocket server
+            const incomingMessage = evt.data;
+            setMessages([incomingMessage, ...messages]);
+            console.log('my messages', messages)
+        }
+    }, [ws, setMessages, messages]);
 
     return <>
         <input
@@ -49,6 +50,6 @@ export const ChatComponent = (props: any) => {
             onChange={handleChange}
         />
         <button onClick={sendMessage}>Send</button>
-
+        {messages.map((message, i) => <div key={i}>{message}</div>)}
     </>;
 }
