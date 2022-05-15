@@ -1,16 +1,23 @@
 import React, {useEffect, useState} from 'react';
 
+const URL = 'ws://127.0.0.1:8080';
+const initWebSocket = new WebSocket(URL);
+
+interface MessageEvent {
+    userName: string;
+    message: string;
+}
+
 export const ChatComponent = (props: any) => {
 
-    const URL = 'ws://127.0.0.1:8000';
-    const [ws, setWs] = useState(new WebSocket(URL));
+    const { user } = props;
+    const [ws, setWs] = useState(initWebSocket);
     const [message, setMessage] = useState("")
     const [messages, setMessages] = useState([""]);
 
     const sendMessage=()=>{
-
         try {
-            ws.send(message) //send data to the server
+            ws.send(JSON.stringify({ userName: user.userName, message: message })) //send data to the server
         } catch (error) {
             console.log(error) // catch error
         }
@@ -36,13 +43,15 @@ export const ChatComponent = (props: any) => {
     useEffect(() => {
         ws.onmessage = (evt) => {
             // listen to data sent from the websocket server
-            const incomingMessage = evt.data;
+            const { message, userName } = JSON.parse(evt.data);
+            const incomingMessage = `${userName}: ${message}`;
             setMessages([incomingMessage, ...messages]);
             console.log('my messages', messages)
         }
     }, [ws, setMessages, messages]);
 
     return <>
+        <div>{user.userName} is in the ChatRoom</div>
         <input
             type="text"
             placeholder={'Type a message ...'}
