@@ -36,7 +36,7 @@ from the first user
 - Display when users join and leavew    
 - Persisting messages, i.e. what if user logs out?
 - Notifications
-
+- Dockerize
 
 
 

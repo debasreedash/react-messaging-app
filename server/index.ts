@@ -27,7 +27,7 @@ app.get('/', (req: Request<MessageRequest>, res: Response) => {
     res.send('Express + TypeScript Server');
 });
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
 });
 

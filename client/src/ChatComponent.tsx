@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
+import {
+    StyledButton,
+    StyledChatMessageContainer,
+    StyledContainer,
+    StyledInput,
+    StyledInputContainer, StyledMessage
+} from "./ChatComponent.styles";
 
 const URL = 'ws://127.0.0.1:8080';
 const initWebSocket = new WebSocket(URL);
-
-interface MessageEvent {
-    userName: string;
-    message: string;
-}
 
 export const ChatComponent = (props: any) => {
 
@@ -29,36 +31,38 @@ export const ChatComponent = (props: any) => {
 
     useEffect(() => {
         ws.onopen = () => {
-            // on connecting, do nothing but log it to the console
-            console.log('connected')
+            // logging the connection
+            console.log('Websocket connected')
         }
 
         ws.onclose = () => {
             console.log('disconnected')
-            // automatically try to reconnect on connection loss
             setWs(new WebSocket(URL));
         }
     }, [ws, setWs]);
 
     useEffect(() => {
         ws.onmessage = (evt) => {
-            // listen to data sent from the websocket server
             const { message, userName } = JSON.parse(evt.data);
             const incomingMessage = `${userName}: ${message}`;
-            setMessages([incomingMessage, ...messages]);
+            setMessages([...messages, incomingMessage]);
             console.log('my messages', messages)
         }
     }, [ws, setMessages, messages]);
+    const displayMessages = messages.filter((m) => /\S/g.test(m)).reverse();
 
-    return <>
-        <div>{user.userName} is in the ChatRoom</div>
-        <input
-            type="text"
-            placeholder={'Type a message ...'}
-            value={message}
-            onChange={handleChange}
-        />
-        <button onClick={sendMessage}>Send</button>
-        {messages.map((message, i) => <div key={i}>{message}</div>)}
-    </>;
+    return <StyledContainer>
+        <StyledChatMessageContainer>
+            {displayMessages.map((message, i) => <StyledMessage key={i}>{message}</StyledMessage>)}
+        </StyledChatMessageContainer>
+        <StyledInputContainer>
+            <StyledInput
+                type="text"
+                placeholder={'Type a message ...'}
+                value={message}
+                onChange={handleChange}
+            />
+            <StyledButton onClick={sendMessage}>Send</StyledButton>
+        </StyledInputContainer>
+    </StyledContainer>;
 }

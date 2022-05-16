@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './App.css';
 import {ChatComponent} from "./ChatComponent";
+import {AppContainer} from "./App.styles";
 
 interface User {
     userName: string;
@@ -16,7 +17,7 @@ function App() {
       }
 
       return (
-        <div className="App">
+        <AppContainer>
             { !user &&
                 <form onSubmit={handleUser}>
                     <input
@@ -29,7 +30,7 @@ function App() {
                 </form>
             }
             {user && <ChatComponent user={user} />}
-        </div>
+        </AppContainer>
       );
 }
 
